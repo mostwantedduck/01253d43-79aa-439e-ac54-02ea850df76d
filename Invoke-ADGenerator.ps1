@@ -251,14 +251,12 @@ function Add-CustomUsers {
     # Create IIS service account
     New-ADUser -Name "IIS Service Account" `
         -SamAccountName iis_svc -UserPrincipalName iis_svc@$Global:Domain `
-        -ServicePrincipalNames "HTTP/IIS.$Global:Domain" `
         -AccountPassword (convertto-securestring "Passw0rd" -asplaintext -force) `
         -PasswordNeverExpires $True `
         -PassThru | Enable-ADAccount
 
     New-ADUser -Name "SQL Service Account" `
         -SamAccountName sql_svc -UserPrincipalName sql_svc@$Global:Domain `
-        -ServicePrincipalNames "SQL/SQL.$Global:Domain" `
         -AccountPassword (convertto-securestring "Passw0rd" -asplaintext -force) `
         -PasswordNeverExpires $True `
         -PassThru | Enable-ADAccount
@@ -279,25 +277,20 @@ function Add-ASREPRoasting {
 function Add-Kerberoasting {
     param (
         [Parameter(Mandatory=$true)]
-        [System.String]$UserName,
-        
-        [Parameter(Mandatory=$true)]
-        [System.String]$Password,
+        [System.String]$username,
 
         [Parameter(Mandatory=$true)]
-        [System.String]$DomainName,
-
+        [System.String]$domainName,
+	
         [Parameter(Mandatory=$true)]
-        [System.String] $spnIdent
+        [System.Int] $spnPort
     )
     
     try {
-        $computerName = $DomainName.split('.')[0].toUpper()
-        
+        $hostname = $DomainName.split('.')[0].toUpper()
         Write-Good "-- Adding Kerberoastable service account to domain"
-        
-        Set-ADAccountControl -Identity "$computerName\$UserName" -ServicePrincipalNames @{Add="$spnIdent/$computerName.$DomainName"}
-
+	# setspn -A <user_name>/<hostname>.<domain>:<port> <user_name>
+	setspn -A "$username/$hostname.$domainName:spnPort" $username
         Write-Info "-- $UserName service account added"
     }
     catch {
