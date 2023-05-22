@@ -31,12 +31,9 @@ echo "$config_content" | tee /etc/nginx/http.d/default > /dev/null
 
 echo "Nginx configuration has been updated and the service has been restarted."
 
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /dev/shm/srv02.key -out /dev/shm/srv02.crt -config /dev/shm/srv02.conf
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/srv02.key -out /tmp/srv02.crt -config /tmp/srv02.conf
 
-mv /dev/shm/srv02.crt /etc/ssl/certs/srv02.crt
-mv /dev/shm/srv02.key /etc/ssl/private/srv02.key
+mv /tmp/srv02.crt /etc/ssl/certs/srv02.crt
+mv /tmp/srv02.key /etc/ssl/private/srv02.key
 
 service nginx restart
-
-
-
