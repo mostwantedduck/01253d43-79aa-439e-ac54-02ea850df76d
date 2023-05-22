@@ -2,6 +2,8 @@
 
 apk add nginx nano iptables
 
+echo "Configuring the firewall"
+
 iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 iptables -A INPUT -p tcp --dport 443 -j ACCEPT
@@ -9,7 +11,7 @@ iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 /etc/init.d/iptables save
 /etc/init.d/iptables restart
 
-
+echo "Configuring the nginx"
 
 config_content=$(cat <<'EOF'
 server {
@@ -36,9 +38,14 @@ server {
 EOF
 )
 
-echo "$config_content" | tee /etc/nginx/http.d/default > /dev/null
+echo "$config_content" | tee /etc/nginx/http.d/default.conf > /dev/null
+
+rc-service nginx start
+rc-update add nginx default
 
 echo "Nginx configuration has been updated and the service has been restarted."
+
+echo "Generate self-signed certificate"
 
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/srv02.key -out /tmp/srv02.crt
 
@@ -48,8 +55,7 @@ mv /tmp/srv02.key /etc/ssl/private/srv02.key
 chmod 600 /etc/ssl/certs/srv02.crt
 chmod 600 /etc/ssl/private/srv02.key
 
-rc-service nginx start
-rc-update add nginx default
+echo "Creating html folder and place a index.html page"
 
 [ ! -d "/var/www/html" ] && mkdir /var/www/html
 
@@ -60,5 +66,5 @@ GNvbG9yOiAjZGM4MTAwOyB0ZXh0LWRlY29yYXRpb246IG5vbmU7IH0KICBhOmhvdmVyIHsgY29sb3I6I
 Wx3YXlzIDxhIGhyZWY9Im1haWx0bzojIj5jb250YWN0IHVzPC9hPiwgb3RoZXJ3aXNlIHdlJnJzcXVvO2xsIGJlIGJhY2sgb25saW5lIHNob3J0bHkhPC9wPgogICAgICAgIDxwPiZtZGFzaDsgVGhlIFRlYW08L3A+CiAgICA8L2Rpdj4KPC9hcnRpY
 2xlPg==" | base64 -d | tee /var/www/html/index.html
 
-
+echo "Configuration is done!"
 
