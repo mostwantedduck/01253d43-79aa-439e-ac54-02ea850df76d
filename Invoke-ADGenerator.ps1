@@ -240,8 +240,6 @@ function Add-UsersToGroup {
             Write-Fault "!!! Error: Adding $SamAccountName --> $($_.Exception.Message)"
         }
     }
-
-    Add-CustomUsers
 }
 
 function Add-CustomUsers {
@@ -268,9 +266,7 @@ function Add-ASREPRoasting {
         [System.String]$UserName
     )
     Write-Good "-- Modifying pre-authentication privileges"
-
     Set-ADAccountControl -Identity $UserName -DoesNotRequirePreAuth 1
-    
     Write-Info "-- ASREP privileges granted to $UserName"
 }
 
@@ -283,14 +279,19 @@ function Add-Kerberoasting {
         [System.String]$domainName,
 	
         [Parameter(Mandatory=$true)]
-        [System.Int] $spnPort
+        [System.Int16] $spnPort
     )
     
     try {
-        $hostname = $DomainName.split('.')[0].toUpper()
+        Write-Info $domainName
+        Write-Info $username
+        $hostname = $domainName.split('.')[0].toUpper()
+        Write-Info $hostname
         Write-Good "-- Adding Kerberoastable service account to domain"
-	# setspn -A <user_name>/<hostname>.<domain>:<port> <user_name>
-	setspn -A "$username/$hostname.$domainName:spnPort" $username
+	    # setspn -A <user_name>/<hostname>.<domain>:<port> <user_name>
+        $spnIdentification = "{0}/{1}.{2}:{3}" -f $username, $hostname, $domainName, $spnPort
+        Write-Info $spnIdentification
+	    setspn -A $spnIdentification $username
         Write-Info "-- $UserName service account added"
     }
     catch {
@@ -395,18 +396,9 @@ function Invoke-ADGenerator {
     Write-Good "                                                                                "
     Start-Sleep -Seconds 1
 
-    Add-Kerberoasting `
-        -UserName "iis_svc" `
-        -Password "Password123!" ` 
-        -DomainName $DomainName ` 
-        -spnIdent "HTTP"
-
-    Add-Kerberoasting ` 
-        -UserName "sql_svc" ` 
-        -Password "Password123!" ` 
-        -DomainName $DomainName ` 
-        -spnIdent "SQL"
-
+    Add-CustomUsers
+    Add-Kerberoasting -username "iis_svc" -domainName $DomainName -spnPort 8080
+    Add-Kerberoasting -username "sql_svc" -domainName $DomainName -spnPort 1433
     Write-Good "--------------------------------------------------------------------------------"
     Write-Good "Kerberoastable service creation completed."
     Write-Good "--------------------------------------------------------------------------------"
