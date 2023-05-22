@@ -2,6 +2,12 @@
 
 apk add nginx nano nftables
 
+nft add table inet filter
+nft add chain inet filter input { type filter hook input priority 0 \; }
+nft add rule inet filter input tcp dport 22 accept
+nft add rule inet filter input tcp dport 80 accept
+nft add rule inet filter input tcp dport 442 accept
+
 config_content=$(cat <<'EOF'
 server {
         listen 80 default_server;
