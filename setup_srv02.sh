@@ -44,7 +44,7 @@ rc-update add nginx default
 
 mkdir /var/www/html
 
-$html = $(cat <<'EOF'
+$html=$(cat <<'EOF'
 <!doctype html>
 <title>Site Maintenance</title>
 <style>
