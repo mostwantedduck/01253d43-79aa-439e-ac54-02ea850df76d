@@ -1,6 +1,6 @@
 #!/bin/ash
 
-apk add nginx nano
+apk add nginx nano nftables
 
 config_content=$(cat <<'EOF'
 server {
@@ -42,30 +42,12 @@ chmod 600 /etc/ssl/private/srv02.key
 rc-service nginx start
 rc-update add nginx default
 
-mkdir /var/www/html
+[ ! -d "/var/www/html" ] && mkdir /var/www/html
 
-$html=$(cat <<'EOF'
-<!doctype html>
-<title>Site Maintenance</title>
-<style>
-  body { text-align: center; padding: 150px; }
-  h1 { font-size: 50px; }
-  body { font: 20px Helvetica, sans-serif; color: #333; }
-  article { display: block; text-align: left; width: 650px; margin: 0 auto; }
-  a { color: #dc8100; text-decoration: none; }
-  a:hover { color: #333; text-decoration: none; }
-</style>
-
-<article>
-    <h1>We&rsquo;ll be back soon!</h1>
-    <div>
-        <p>Sorry for the inconvenience but we&rsquo;re performing some maintenance at the moment. If you need to you can always <a href="mailto:#">contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
-        <p>&mdash; The Team</p>
-    </div>
-</article>
-}
-EOF
-)
-
-echo "$html" | tee /var/wwww/html/index.html > /dev/null
+echo "PCFkb2N0eXBlIGh0bWw+Cjx0aXRsZT5TaXRlIE1haW50ZW5hbmNlPC90aXRsZT4KPHN0eWxlPgogIGJvZHkgeyB0ZXh0LWFsaWduOiBjZW50ZXI7IHBhZGRpbmc6IDE1MHB4OyB9CiAgaDEgeyBmb250LXNpemU6IDUwcHg7IH0KI
+CBib2R5IHsgZm9udDogMjBweCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWY7IGNvbG9yOiAjMzMzOyB9CiAgYXJ0aWNsZSB7IGRpc3BsYXk6IGJsb2NrOyB0ZXh0LWFsaWduOiBsZWZ0OyB3aWR0aDogNjUwcHg7IG1hcmdpbjogMCBhdXRvOyB9CiAgYSB7I
+GNvbG9yOiAjZGM4MTAwOyB0ZXh0LWRlY29yYXRpb246IG5vbmU7IH0KICBhOmhvdmVyIHsgY29sb3I6ICMzMzM7IHRleHQtZGVjb3JhdGlvbjogbm9uZTsgfQo8L3N0eWxlPgoKPGFydGljbGU+CiAgICA8aDE+V2UmcnNxdW87bGwgYmUgYmFjayBzb
+29uITwvaDE+CiAgICA8ZGl2PgogICAgICAgIDxwPlNvcnJ5IGZvciB0aGUgaW5jb252ZW5pZW5jZSBidXQgd2UmcnNxdW87cmUgcGVyZm9ybWluZyBzb21lIG1haW50ZW5hbmNlIGF0IHRoZSBtb21lbnQuIElmIHlvdSBuZWVkIHRvIHlvdSBjYW4gY
+Wx3YXlzIDxhIGhyZWY9Im1haWx0bzojIj5jb250YWN0IHVzPC9hPiwgb3RoZXJ3aXNlIHdlJnJzcXVvO2xsIGJlIGJhY2sgb25saW5lIHNob3J0bHkhPC9wPgogICAgICAgIDxwPiZtZGFzaDsgVGhlIFRlYW08L3A+CiAgICA8L2Rpdj4KPC9hcnRpY
+2xlPg==" | base64 -d | tee /var/www/html/index.html
 
