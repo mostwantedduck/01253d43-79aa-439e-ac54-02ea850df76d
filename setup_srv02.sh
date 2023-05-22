@@ -36,6 +36,9 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/srv02.key -out 
 mv /tmp/srv02.crt /etc/ssl/certs/srv02.crt
 mv /tmp/srv02.key /etc/ssl/private/srv02.key
 
+chmod 600 /etc/ssl/certs/srv02.crt
+chmod 600 /etc/ssl/private/srv02.key
+
 rc-service nginx start
 rc-update add nginx default
 
