@@ -66,5 +66,7 @@ echo "PCFkb2N0eXBlIGh0bWw+Cjx0aXRsZT5TaXRlIE1haW50ZW5hbmNlPC90aXRsZT4KPHN0eWxlPg
 echo "Creating priv esc vector, password reuse"
 echo "CiMgdXNlZCB0byBjb3B5IHRoZSB3ZWIgYXBwISBkb24ndCBmb3JnZXQgdG8gZGVsZXRlIGl0ISEKCnNzaHBhc3MgLWYgIlBhc3N3b3JkMTIzIiBzY3AgL3Zhci93d3cvZGV2L2FwcC56aXAgZGV2ZWxvcGVyQDE5Mi4xNjguMTAuMTA6L3Zhci93d3cvbG9jYWxob3N0L2h0ZG9jcy9hcHAuemlwCg=="  | base64 -d | tee /opt/copy_app.sh
 
+rm /var/www/localhost/htdocs/index.html
+
 echo "Configuration is done!"
 
