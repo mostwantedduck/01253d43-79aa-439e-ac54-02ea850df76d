@@ -11,7 +11,19 @@ iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 iptables -A INPUT -p tcp --dport 8080 -j DROP
 
-/etc/init.d/iptables save
+iptables-save > /etc/iptables/rules.v4
+
+firewall_rules=$(cat <<'EOF'
+#!/bin/sh
+iptables-restore < /etc/iptables/rules.v4
+EOF
+)
+
+echo "$firewall_rules" | tee /etc/local.d/iptables.start > /dev/null
+chmod +x /etc/local.d/iptables.start
+
+rc-service iptables start
+rc-update add iptables default
 
 echo "Configuring the nginx"
 
